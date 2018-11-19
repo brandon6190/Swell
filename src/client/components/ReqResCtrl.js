@@ -102,17 +102,19 @@ const ReqResCtrl = {
     headers.forEach(head => {
       formattedHeaders[head.key] = head.value
     })
+    //add the original URL as a targetURL for proxy to read from
+    formattedHeaders.targetUrl = url;
+    formattedHeaders.targetMethod = method;
 
-    // formattedHeaders["Access-Control-Allow-Origin"] = '*';
 
     let outputObj = {
-      method: method,
-      mode: "cors", // no-cors, cors, *same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
+      method: 'GET',
+      // mode: "cors", // no-cors, cors, *same-origin
+      // // cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      // credentials: "same-origin", // include, *same-origin, omit
       headers: formattedHeaders,
-      redirect: "follow", // manual, *follow, error
-      referrer: "no-referrer", // no-referrer, *client
+      // redirect: "follow", // manual, *follow, error
+      // referrer: "no-referrer", // no-referrer, *client
     };
 
     if (method !== 'GET' && method !== 'HEAD') {
@@ -134,8 +136,10 @@ const ReqResCtrl = {
 
     parsedObj.signal = signal; 
 
-    return fetch(url, parsedObj)
+    return fetch('http://localhost:80/cors', parsedObj)
     .then(response => {
+      console.log('RESPONSE RECEIVED BY FRONT END',response);
+
       let heads = {};
 
       for (let entry of response.headers.entries()) {
@@ -199,7 +203,9 @@ const ReqResCtrl = {
 
         //decode and recursively call
         else {
+          //decode
           let receivedEventFields = new TextDecoder("utf-8").decode(obj.value)
+
           //since the string is multi line, each for a different field, split by line
           .split('\n')
           //remove empty lines
