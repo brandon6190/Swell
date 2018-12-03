@@ -2,11 +2,17 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 // Import parts of electron to use
-const { app, BrowserWindow, TouchBar, session } = require('electron')
-const path = require('path')
-const url = require('url')
+const {
+  app, BrowserWindow, TouchBar, session,
+} = require('electron');
+const path = require('path');
+const url = require('url');
 
-const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
+const {
+  default: installExtension,
+  REACT_DEVELOPER_TOOLS,
+  REDUX_DEVTOOLS,
+} = require('electron-devtools-installer');
 
 // const player = require('play-sound')
 // const wave = new Audio('./src/assets/audio/wavebig.mpg')
@@ -15,7 +21,7 @@ const { TouchBarButton, TouchBarSpacer } = TouchBar;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
 
 const tbSelectAllButton = new TouchBarButton({
   label: 'Select All',
@@ -68,7 +74,14 @@ const tbFlexSpacer = new TouchBarSpacer({
   size: 'flexible',
 });
 
-const touchBar = new TouchBar([tbSpacer, tbSelectAllButton, tbDeselectAllButton, tbOpenSelectedButton, tbCloseSelectedButton, tbClearAllButton]);
+const touchBar = new TouchBar([
+  tbSpacer,
+  tbSelectAllButton,
+  tbDeselectAllButton,
+  tbOpenSelectedButton,
+  tbCloseSelectedButton,
+  tbClearAllButton,
+]);
 
 // Keep a reference for dev mode
 let dev = false;
@@ -96,8 +109,8 @@ function createWindow() {
     show: false,
     title: 'Swell',
     webPreferences: { webSecurity: false },
-    icon: `${__dirname}/src/assets/icons/png/64x64.png`
-  })
+    icon: `${__dirname}/src/assets/icons/png/64x64.png`,
+  });
 
   // Adding React & Redux DevTools to Electon App
   installExtension(REACT_DEVELOPER_TOOLS)
@@ -135,7 +148,6 @@ function createWindow() {
   // })
   // sesh.clearStorageData({storages: ['cookies']}, (x) => console.log(x))
 
-
   mainWindow.setTouchBar(touchBar);
 
   // prevent webpack-dev-server from setting new title
@@ -143,7 +155,7 @@ function createWindow() {
 
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow.show();
     // wave.play()
     // play wave crash on open
     // player.Play('./src/assets/audio/wavebig.mpg', (err) => {
@@ -152,9 +164,9 @@ function createWindow() {
 
     // Open the DevTools automatically if developing
     if (dev) {
-      mainWindow.webContents.openDevTools()
+      mainWindow.webContents.openDevTools();
     }
-  })
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -164,9 +176,8 @@ function createWindow() {
     mainWindow = null;
   });
 
-  //require menu files
-  require('./menu/mainMenu')
-
+  // require menu files
+  require('./menu/mainMenu');
 }
 
 // function createLoadingScreen() {
