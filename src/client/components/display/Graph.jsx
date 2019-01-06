@@ -19,12 +19,12 @@ class Graph extends Component {
     // linechart cannot be stored in state...
     // as there is no way to make a duplicate of it due to circular structure
     this.state = {
-      // use the event counter as a 'hack' to force rerenders
+      // use the event counter as a 'hack' to force re-renders
       eventCounter: 0,
       currentTime: Date.now(),
       timeSet: false,
-      oldestDataPointTimeReceived : 0,
-      timeFromNowToDisplay : 30000,
+      oldestDataPointTimeReceived: 0,
+      timeFromNowToDisplay: 30000,
     };
     this.updateTimeFromNowToDisplay = this.updateTimeFromNowToDisplay.bind(this);
   }
@@ -41,10 +41,10 @@ class Graph extends Component {
         datasets: [],
       },
       options: {
-        animation : {
-          duration : 0,
+        animation: {
+          duration: 0,
         },
-        maintainAspectRatio : false,
+        maintainAspectRatio: false,
         showLines: true,
         scales: {
           xAxes: [
@@ -56,9 +56,11 @@ class Graph extends Component {
               },
             },
           ],
-          yAxes: [{
-            display: false,
-          }]
+          yAxes: [
+            {
+              display: false,
+            },
+          ],
         },
       },
     });
@@ -107,49 +109,53 @@ class Graph extends Component {
     const newDataSets = [];
     this.props.reqResArray.forEach((reqRes, index) => {
       // console.log(reqRes)
-      if ((reqRes.response.events && reqRes.timeReceived > this.state.currentTime) ||
-      (reqRes.response.messages || reqRes.request.messages)) {
+      if (
+        (reqRes.response.events && reqRes.timeReceived > this.state.currentTime)
+        || (reqRes.response.messages || reqRes.request.messages)
+      ) {
         // create dataset...
         let backgroundColor;
         let borderColor;
         let pointBorderColor;
         switch (index) {
-          case 0 : {
+          case 0: {
             backgroundColor = 'rgba(21,183,143, .1)';
             borderColor = 'rgb(21,183,143, .9)';
             pointBorderColor = 'rgb(21,183,143)';
             break;
           }
-          case 1 : {
-            backgroundColor = 'rgba(0,161,147, .1)'
-            borderColor = 'rgba(0,161,147, .9)'
-            pointBorderColor = 'rgb(0,161,147)'
+          case 1: {
+            backgroundColor = 'rgba(0,161,147, .1)';
+            borderColor = 'rgba(0,161,147, .9)';
+            pointBorderColor = 'rgb(0,161,147)';
             break;
           }
-          case 2 : {
-            backgroundColor = 'rgba(0,116,131, .1)'
-            borderColor = 'rgba(0,116,131, .9)'
-            pointBorderColor = 'rgb(0,116,131)'
+          case 2: {
+            backgroundColor = 'rgba(0,116,131, .1)';
+            borderColor = 'rgba(0,116,131, .9)';
+            pointBorderColor = 'rgb(0,116,131)';
             break;
           }
-          case 3 : {
-            backgroundColor = 'rgba(0,155,191, .1)'
-            borderColor = 'rgba(0,155,191, .9)'
-            pointBorderColor = 'rgb(0,155,191)'
+          case 3: {
+            backgroundColor = 'rgba(0,155,191, .1)';
+            borderColor = 'rgba(0,155,191, .9)';
+            pointBorderColor = 'rgb(0,155,191)';
             break;
           }
-          case 4 : {
-            backgroundColor = 'rgba(0,137,208, .1)'
-            borderColor = 'rgba(0,137,208, .9)'
-            pointBorderColor = 'rgb(0,137,208)'
+          case 4: {
+            backgroundColor = 'rgba(0,137,208, .1)';
+            borderColor = 'rgba(0,137,208, .9)';
+            pointBorderColor = 'rgb(0,137,208)';
             break;
           }
-          case 5 : {
-            backgroundColor = 'rgba(49,87,192, .1)'
-            borderColor = 'rgba(49,87,192, .9)'
-            pointBorderColor = 'rgb(49,87,192)'
+          case 5: {
+            backgroundColor = 'rgba(49,87,192, .1)';
+            borderColor = 'rgba(49,87,192, .9)';
+            pointBorderColor = 'rgb(49,87,192)';
             break;
           }
+          default:
+            console.log('Not a valid index');
         }
 
         const dataSet = {
@@ -177,9 +183,8 @@ class Graph extends Component {
         switch (reqRes.connectionType) {
           case 'SSE': {
             reqRes.response.events.forEach((event) => {
-              if(Date.now() - event.timeReceived < this.state.timeFromNowToDisplay) {
-                
-                //to determine if the graph needs to update
+              if (Date.now() - event.timeReceived < this.state.timeFromNowToDisplay) {
+                // to determine if the graph needs to update
                 if (event.timeReceived < newOldestDataPointTimeReceived) {
                   newOldestDataPointTimeReceived = event.timeReceived;
                 }
@@ -191,14 +196,13 @@ class Graph extends Component {
                 });
               }
             });
-            console.log(dataSet.data)
+            console.log(dataSet.data);
             break;
           }
 
           case 'plain': {
             reqRes.response.events.forEach((event) => {
-              if(Date.now() - reqRes.timeReceived < this.state.timeFromNowToDisplay) {
-
+              if (Date.now() - reqRes.timeReceived < this.state.timeFromNowToDisplay) {
                 if (reqRes.timeReceived < newOldestDataPointTimeReceived) {
                   newOldestDataPointTimeReceived = reqRes.timeReceived;
                 }
@@ -214,8 +218,8 @@ class Graph extends Component {
           }
 
           case 'WebSocket': {
-            reqRes.response.messages.forEach(message => {
-              if(Date.now() - message.timeReceived < this.state.timeFromNowToDisplay) {
+            reqRes.response.messages.forEach((message) => {
+              if (Date.now() - message.timeReceived < this.state.timeFromNowToDisplay) {
                 if (message.timeReceived < newOldestDataPointTimeReceived) {
                   newOldestDataPointTimeReceived = message.timeReceived;
                 }
@@ -226,8 +230,8 @@ class Graph extends Component {
                 });
               }
             });
-            reqRes.request.messages.forEach(message => {
-              if(Date.now() - message.timeReceived < this.state.timeFromNowToDisplay) {
+            reqRes.request.messages.forEach((message) => {
+              if (Date.now() - message.timeReceived < this.state.timeFromNowToDisplay) {
                 if (message.timeReceived < newOldestDataPointTimeReceived) {
                   newOldestDataPointTimeReceived = message.timeReceived;
                 }
@@ -248,11 +252,14 @@ class Graph extends Component {
       }
     });
 
-    if (this.state.eventCounter !== newEventCounter || this.state.oldestDataPointTimeReceived !== newOldestDataPointTimeReceived) {
+    if (
+      this.state.eventCounter !== newEventCounter
+      || this.state.oldestDataPointTimeReceived !== newOldestDataPointTimeReceived
+    ) {
       this.setState(
         {
           eventCounter: newEventCounter,
-          oldestDataPointTimeReceived : newOldestDataPointTimeReceived
+          oldestDataPointTimeReceived: newOldestDataPointTimeReceived,
         },
         () => {
           // console.log('Rerender');
@@ -263,31 +270,31 @@ class Graph extends Component {
     }
   }
 
-  updateTimeFromNowToDisplay (e) {
+  updateTimeFromNowToDisplay(e) {
     this.setState({
-      timeFromNowToDisplay : e.target.value
+      timeFromNowToDisplay: e.target.value,
     });
   }
 
   render() {
-    let chartDisplayStyles = {
-      'display' : this.state.eventCounter > 0 ? 'block' : 'none',
-    }
-    let warningDisplayStyles = {
-      'display' : this.state.eventCounter === 0 ? 'block' : 'none',
-    }
+    const chartDisplayStyles = {
+      display: this.state.eventCounter > 0 ? 'block' : 'none',
+    };
+    const warningDisplayStyles = {
+      display: this.state.eventCounter === 0 ? 'block' : 'none',
+    };
 
     return (
       <div>
-        <div style={warningDisplayStyles} className={'warningContainer'}>
-          <div className={'warning'}>
+        <div style={warningDisplayStyles} className="warningContainer">
+          <div className="warning">
             Please add a request and hit the Open button to see response timing information.
           </div>
         </div>
-        <canvas className={'chart'} style={chartDisplayStyles} id="line-chart" />
-        <div className={'chartTime'} style={chartDisplayStyles}>
+        <canvas className="chart" style={chartDisplayStyles} id="line-chart" />
+        <div className="chartTime" style={chartDisplayStyles}>
           <span>Display results:</span>
-          <select onChange={this.updateTimeFromNowToDisplay} className={'chartTimeSelect'}>
+          <select onChange={this.updateTimeFromNowToDisplay} className="chartTimeSelect">
             <option value={10000}>Past 10 seconds</option>
             <option value={30000}>Past 30 seconds</option>
             <option value={60000}>Past 1 minute</option>
