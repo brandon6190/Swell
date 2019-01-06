@@ -1,6 +1,7 @@
 import * as store from '../store';
 import * as actions from '../actions/actions';
-const session = require('electron').remote.session;
+
+const { session } = require('electron').remote;
 const http2 = require('http2');
 
 const httpController = {
@@ -53,7 +54,7 @@ const httpController = {
         clearInterval(interval);
         if (foundHTTP2Connection.status === 'initialized') {
           reqResObj.connection = 'error';
-          console.log('line56')
+          console.log('line56');
           store.default.dispatch(actions.reqResUpdate(reqResObj));
         }
       }, 10000);
@@ -113,7 +114,7 @@ const httpController = {
     reqResObj.response.events = [];
     reqResObj.connection = 'pending';
     reqResObj.timeSent = Date.now();
-    console.log('line116')
+    console.log('line116');
     store.default.dispatch(actions.reqResUpdate(reqResObj));
 
     const formattedHeaders = {};
@@ -140,9 +141,9 @@ const httpController = {
       protocol: 'HTTP2',
       id: reqResObj.id,
     };
-    
+
     connectionArray.push(openConnectionObj);
- 
+
     let isSSE;
 
     reqStream.on('response', (headers, flags) => {
@@ -162,10 +163,15 @@ const httpController = {
       reqResObj.response.headers = headers;
       reqResObj.response.events = [];
 
-      let sesh = session.defaultSession; 
-      let domain = reqResObj.host.split('//')
+      const sesh = session.defaultSession;
+      let domain = reqResObj.host.split('//');
       domain.shift();
-      domain = domain.join('').split('.').splice(-2).join('.').split(':')[0]
+      domain = domain
+        .join('')
+        .split('.')
+        .splice(-2)
+        .join('.')
+        .split(':')[0];
       // let dotDomain = `.${domain}`;
       // console.log(domain, dotDomain);
 
@@ -184,8 +190,8 @@ const httpController = {
 
       //       sesh.cookies.remove(url, cook.name, (x) => console.log(x));
       //     })
-        // }
-        store.default.dispatch(actions.reqResUpdate(reqResObj));
+      // }
+      store.default.dispatch(actions.reqResUpdate(reqResObj));
       // })
     });
 
@@ -260,12 +266,11 @@ const httpController = {
     const parsedFetchOptions = this.parseFetchOptionsFromReqRes(reqResObj);
     parsedFetchOptions.signal = openConnectionObj.abort.signal;
 
-    fetch(reqResObj.url, parsedFetchOptions)
-    .then(response => {
-      console.log('RESPONSE ::', response)
-      //Parse response headers now to decide if SSE or not.
-      let heads = {};
-      for (let entry of response.headers.entries()) {
+    fetch(reqResObj.url, parsedFetchOptions).then((response) => {
+      console.log('RESPONSE ::', response);
+      // Parse response headers now to decide if SSE or not.
+      const heads = {};
+      for (const entry of response.headers.entries()) {
         heads[entry[0].toLowerCase()] = entry[1];
       }
       reqResObj.response.headers = heads;
@@ -273,33 +278,41 @@ const httpController = {
       let isStream;
       if (heads['content-type'] && heads['content-type'].includes('stream')) {
         isStream = true;
-      } else {
+      }
+      else {
         isStream = false;
       }
-      let http1Sesh = session.defaultSession; 
-      let domain = reqResObj.host.split('//')
+      const http1Sesh = session.defaultSession;
+      let domain = reqResObj.host.split('//');
       domain.shift();
-      domain = domain.join('').split('.').splice(-2).join('.').split(':')[0]
+      domain = domain
+        .join('')
+        .split('.')
+        .splice(-2)
+        .join('.')
+        .split(':')[0];
       // let dotDomain = `.${domain}`;
       // console.log(domain, dotDomain);
 
-      http1Sesh.cookies.get({domain: domain}, (err, cookies) => {
+      http1Sesh.cookies.get({ domain }, (err, cookies) => {
         if (cookies) {
           reqResObj.response.cookies = cookies;
-          store.default.dispatch(actions.reqResUpdate(reqResObj))
-          cookies.forEach(cook => {
+          store.default.dispatch(actions.reqResUpdate(reqResObj));
+          cookies.forEach((cook) => {
             let url = '';
             url += cook.secure ? 'https://' : 'http://';
             url += cook.domain.charAt(0) === '.' ? 'www' : '';
             url += cook.domain;
             url += cook.path;
 
-            http1Sesh.cookies.remove(url, cook.name, (x) => console.log(x));
-          })
+            http1Sesh.cookies.remove(url, cook.name, x => console.log(x));
+          });
         }
-        isStream ? this.handleSSE(response, reqResObj, heads) : this.handleSingleEvent(response, reqResObj, heads);
-      })
-    })
+        isStream
+          ? this.handleSSE(response, reqResObj, heads)
+          : this.handleSingleEvent(response, reqResObj, heads);
+      });
+    });
   },
 
   parseFetchOptionsFromReqRes(reqResObject) {
@@ -346,7 +359,7 @@ const httpController = {
 
     function read() {
       reader.read().then((obj) => {
-         if (obj.done) {
+        if (obj.done) {
           newObj.connection = 'closed';
           newObj.connectionType = 'plain';
           newObj.timeReceived = Date.now();
