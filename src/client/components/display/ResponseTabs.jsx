@@ -45,13 +45,13 @@ class ResponseTabs extends Component {
         });
         break;
       default:
-        // console.log(`There was an error with ${val}`);
+      // console.log(`There was an error with ${val}`);
     }
   }
 
   render() {
     const events = 'Events';
-    const cookies = "Cookies";
+    const cookies = 'Cookies';
     const headers = 'Headers';
     const tabContentShownEvents = [];
     let tabContentShown;
@@ -95,7 +95,7 @@ class ResponseTabs extends Component {
           }
         }
         else if (this.state.openTabs === 'Headers') {
-          console.log('on headers')
+          console.log('on headers');
           const headerObj = this.props.responseContent.headers;
           if (!Array.isArray(headerObj) && headerObj) {
             for (const key in headerObj) {
@@ -104,9 +104,7 @@ class ResponseTabs extends Component {
                 tabContentShownEvents.push(
                   <div className="nested-grid-2" key={key}>
                     <span className="tertiary-title title_offset">{key}</span>
-                    <span className="tertiary-title title_offset">
-                      {headerObj[key]}
-                    </span>
+                    <span className="tertiary-title title_offset">{headerObj[key]}</span>
                   </div>,
                 );
               }
@@ -115,10 +113,17 @@ class ResponseTabs extends Component {
               }
             }
           }
-        } else if (this.state.openTabs === 'Cookies') {
-            console.log('cookies showing', this.props.responseContent.cookies);
-            tabContentShownEvents.push(<CookieTable className='cookieTable' cookies={this.props.responseContent.cookies} key='{cookieTable}'></CookieTable>)
-          }         
+        }
+        else if (this.state.openTabs === 'Cookies') {
+          console.log('cookies showing', this.props.responseContent.cookies);
+          tabContentShownEvents.push(
+            <CookieTable
+              className="cookieTable"
+              cookies={this.props.responseContent.cookies}
+              key="{cookieTable}"
+            />,
+          );
+        }
       }
     });
 
