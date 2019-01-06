@@ -1,5 +1,4 @@
 import format from 'date-fns/format';
-import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import * as store from '../store';
 import * as actions from '../actions/actions';
