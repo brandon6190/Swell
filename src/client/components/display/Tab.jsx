@@ -8,23 +8,24 @@ class Tab extends Component {
     super(props);
     this.state = {
       selectedTab: '',
-    }
+    };
     this.tabClickHandler = this.tabClickHandler.bind(this);
   }
 
-  tabClickHandler () {
-    console.log('TabClick')
-    let selectedTab = this.props.tabName;
+  tabClickHandler() {
+    console.log('TabClick');
+    const selectedTab = this.props.tabName;
     console.log(selectedTab);
-    this.props.onTabSelected(selectedTab);            
+    this.props.onTabSelected(selectedTab);
   }
 
   render() {
-    return(
-      <li onClick={this.tabClickHandler} className={'tab-list-item'}>{this.props.tabName}</li>
-    )
+    return (
+      <li onClick={this.tabClickHandler} className="tab-list-item">
+        {this.props.tabName}
+      </li>
+    );
   }
 }
 
-
-export default (Tab);
+export default Tab;
