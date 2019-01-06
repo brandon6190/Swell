@@ -2,7 +2,7 @@
 @import 'colors';
 @import 'base';
 @import 'grid';
-@import 'fonts';
+@import 'type';
 @import 'reqres';
 @import 'chart';
 @import 'sidebar';
@@ -10,26 +10,6 @@
 @import 'tabs';
 @import 'sidebar';
 @import 'cookieTable';
-
-// h1 {
-//   color: $green;
-//   font-weight: bold;
-//   font-size: 3.5rem;
-
-//   &:after {
-//     content: '👋';
-//     display: inline-block;
-//     transform: rotate(-20deg);
-//     animation: wave .75s infinite linear alternate;
-//   }
-// }
-
-// @keyframes wave {
-//   100% {
-//     transform: rotate(20deg);
-//   }
-// }
-
-
-
+@import 'popup';
+@import 'websocket';
 

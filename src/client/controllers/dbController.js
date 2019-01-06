@@ -1,4 +1,6 @@
 import format from 'date-fns/format';
+import format from 'date-fns/format';
+import parse from 'date-fns/parse';
 import * as store from '../store';
 import * as actions from '../actions/actions';
 import db from '../db';
@@ -31,7 +33,7 @@ const dbController = {
           return groups;
         }, {});
         const historyGroupsArr = Object.keys(historyGroupsObj)
-          .sort((a, b) => a - b)
+          .sort((a, b) => parse(b) - parse(a))
           .map(date => ({
             date,
             history: historyGroupsObj[date].sort((a, b) => b.created_at - a.created_at),

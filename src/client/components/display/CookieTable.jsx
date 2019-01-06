@@ -21,18 +21,19 @@ class CookieTable extends Component {
     }
 
     render() {
-      console.log('all cookies', this.props.cookies)
+      // console.log('all cookies', this.props.cookies)
       let cookieRowArray;
       if (Array.isArray(this.props.cookies)) {
         cookieRowArray = this.props.cookies.map((cookie, i) => {
           return <CookieTableRow className='cookieTableRow' cookie={cookie} key={i} ></CookieTableRow>
         })
-        console.log('cookies array', cookieRowArray);
+        // console.log('cookies array', cookieRowArray);
       }
 
       return (
         <div className='cookieTable'>
-          <div className='cookieTableHeaders'>
+          <div className='cookieTableHeaders nested-grid-9'>
+            
             <div className='cookieTableHeaderCell'>Name</div>
             <div className='cookieTableHeaderCell'>Value</div>
             <div className='cookieTableHeaderCell'>Domain</div>

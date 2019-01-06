@@ -2,32 +2,29 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 // Import parts of electron to use
-const {
-  app, BrowserWindow, TouchBar, session,
-} = require('electron');
-const path = require('path');
-const url = require('url');
+const { app, BrowserWindow, TouchBar, session } = require('electron')
 
-const {
-  default: installExtension,
-  REACT_DEVELOPER_TOOLS,
-  REDUX_DEVTOOLS,
-} = require('electron-devtools-installer');
+const path = require('path')
+const url = require('url')
 
-// const player = require('play-sound')
-// const wave = new Audio('./src/assets/audio/wavebig.mpg')
+// Import Auto-Updater
+const { autoUpdater } = require('electron-updater')
+const log = require('electron-log');
 
 const { TouchBarButton, TouchBarSpacer } = TouchBar;
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+// // configure logging
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
+
+let mainWindow
 
 const tbSelectAllButton = new TouchBarButton({
   label: 'Select All',
   backgroundColor: '#3DADC2',
   click: () => {
-    console.log('select all');
+    // console.log('select all');
     mainWindow.webContents.send('selectAll');
   },
 });
@@ -36,7 +33,7 @@ const tbDeselectAllButton = new TouchBarButton({
   label: 'Deselect All',
   backgroundColor: '#3DADC2',
   click: () => {
-    console.log('deselect all');
+    // console.log('deselect all');
     mainWindow.webContents.send('deselectAll');
   },
 });
@@ -45,7 +42,7 @@ const tbOpenSelectedButton = new TouchBarButton({
   label: 'Open Selected',
   backgroundColor: '#00E28B',
   click: () => {
-    console.log('opening all selected');
+    // console.log('opening all selected');
     mainWindow.webContents.send('openAllSelected');
   },
 });
@@ -54,7 +51,7 @@ const tbCloseSelectedButton = new TouchBarButton({
   label: 'Close Selected',
   backgroundColor: '#DB5D58',
   click: () => {
-    console.log('closing all selected');
+    // console.log('closing all selected');
     mainWindow.webContents.send('closeAllSelected');
   },
 });
@@ -63,7 +60,7 @@ const tbClearAllButton = new TouchBarButton({
   label: 'Clear All',
   backgroundColor: '#708090',
   click: () => {
-    console.log('clearing all');
+    // console.log('clearing all');
     mainWindow.webContents.send('clearAll');
   },
 });
@@ -106,20 +103,26 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1024,
     height: 768,
+    minWidth: 1024,
+    minHeight: 565,
+    backgroundColor: '-webkit-linear-gradient(top, #3dadc2 0%,#2f4858 100%)',
     show: false,
     title: 'Swell',
     webPreferences: { webSecurity: false },
-    icon: `${__dirname}/src/assets/icons/png/64x64.png`,
-  });
+    icon: `${__dirname}/src/assets/icons/64x64.png`
+  })
 
+  if (dev) {
+    const { default: installExtension, REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } = require('electron-devtools-installer');
   // Adding React & Redux DevTools to Electon App
-  installExtension(REACT_DEVELOPER_TOOLS)
-    .then(name => console.log(`Added Extension:  ${name}`))
-    .catch(err => console.log('An error occurred: ', err));
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then(name => console.log(`Added Extension:  ${name}`))
+      .catch(err => console.log('An error occurred: ', err));
 
-  installExtension(REDUX_DEVTOOLS)
-    .then(name => console.log(`Added Extension:  ${name}`))
-    .catch(err => console.log('An error occurred: ', err));
+    installExtension(REDUX_DEVTOOLS)
+      .then(name => console.log(`Added Extension:  ${name}`))
+      .catch(err => console.log('An error occurred: ', err));
+  }
 
   // and load the index.html of the app.
   let indexPath;
@@ -142,12 +145,6 @@ function createWindow() {
 
   mainWindow.loadURL(indexPath);
 
-  // const sesh = mainWindow.webContents.session;
-  // sesh.cookies.get({}, (err, cookies) => {
-  //   console.log(cookies)
-  // })
-  // sesh.clearStorageData({storages: ['cookies']}, (x) => console.log(x))
-
   mainWindow.setTouchBar(touchBar);
 
   // prevent webpack-dev-server from setting new title
@@ -156,11 +153,6 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    // wave.play()
-    // play wave crash on open
-    // player.Play('./src/assets/audio/wavebig.mpg', (err) => {
-    //   if (err) throw err
-    // })
 
     // Open the DevTools automatically if developing
     if (dev) {
@@ -180,21 +172,13 @@ function createWindow() {
   require('./menu/mainMenu');
 }
 
-// function createLoadingScreen() {
-//   loadingScreen = new BrowserWindow(Object.assign(windowParams, {parent: mainWindow}));
-//   loadingScreen.loadURL('file://' + __dirname + '/loading.html');
-//   loadingScreen.on('closed', () => loadingScreen = null);
-//   loadingScreen.webContents.on('did-finish-load', () => {
-//       loadingScreen.show();
-//   });
-// }
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   // createLoadingScreen();
   createWindow();
+  if (!dev) { autoUpdater.checkForUpdates() };
 });
 
 // Quit when all windows are closed.
@@ -204,6 +188,42 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// Auto Updating Functionality
+const sendStatusToWindow = (text) => {
+  log.info(text);
+  if (mainWindow) {
+    mainWindow.webContents.send('message', text);
+  }
+};
+
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+});
+autoUpdater.on('update-available', info => {
+  sendStatusToWindow('Update available.');
+});
+autoUpdater.on('update-not-available', info => {
+  sendStatusToWindow('Update not available.');
+});
+autoUpdater.on('error', err => {
+  sendStatusToWindow(`Error in auto-updater: ${err.toString()}`);
+});
+autoUpdater.on('download-progress', progressObj => {
+  sendStatusToWindow(
+    `Download speed: ${progressObj.bytesPerSecond} - Downloaded ${progressObj.percent}% (${progressObj.transferred} + '/' + ${progressObj.total} + )`
+  );
+});
+autoUpdater.on('update-downloaded', info => {
+  sendStatusToWindow('Update downloaded; will install now');
+});
+
+autoUpdater.on('update-downloaded', info => {
+  // Wait 5 seconds, then quit and install
+  // In your application, you don't need to wait 500 ms.
+  // You could call autoUpdater.quitAndInstall(); immediately
+  autoUpdater.quitAndInstall();
 });
 
 app.on('activate', () => {

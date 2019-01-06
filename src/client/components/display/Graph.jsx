@@ -196,7 +196,7 @@ class Graph extends Component {
                 });
               }
             });
-            console.log(dataSet.data);
+            // console.log(dataSet.data)
             break;
           }
 
@@ -294,7 +294,7 @@ class Graph extends Component {
         <canvas className="chart" style={chartDisplayStyles} id="line-chart" />
         <div className="chartTime" style={chartDisplayStyles}>
           <span>Display results:</span>
-          <select onChange={this.updateTimeFromNowToDisplay} className="chartTimeSelect">
+          <select onChange={this.updateTimeFromNowToDisplay} className={'chartTimeSelect'} defaultValue={30000} >
             <option value={10000}>Past 10 seconds</option>
             <option value={30000}>Past 30 seconds</option>
             <option value={60000}>Past 1 minute</option>

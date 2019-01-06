@@ -6,12 +6,14 @@ import * as actions from '../../../actions/actions';
 import HeaderEntryForm from './HeaderEntryForm.jsx';
 import BodyEntryForm from "./BodyEntryForm.jsx";
 import FieldEntryForm from "./FieldEntryForm.jsx";
+import CookieEntryForm from './CookieEntryForm.jsx';
 import dbController from '../../../controllers/dbController'
 
 const mapStateToProps = store => ({
   newRequestFields : store.business.newRequestFields,
   newRequestHeaders : store.business.newRequestHeaders,
   newRequestBody : store.business.newRequestBody,
+  newRequestCookies : store.business.newRequestCookies,
   currentTab : store.business.currentTab,
 });
 
@@ -34,6 +36,9 @@ const mapDispatchToProps = dispatch => ({
   },
   setNewRequestBody : (requestBodyObj) => {
     dispatch(actions.setNewRequestBody(requestBodyObj));
+  },
+  setNewRequestCookies : (requestCookiesObj) => {
+    dispatch(actions.setNewRequestCookies(requestCookiesObj));
   },
 });
 
@@ -103,6 +108,7 @@ class ModalNewRequest extends Component {
             method : this.props.newRequestFields.method,
             headers : this.props.newRequestHeaders.headersArr.filter(header => header.active),
             body : this.props.newRequestBody.bodyContent,
+            cookies : this.props.newRequestCookies.cookiesArr.filter(cookie => cookie.active),
             bodyType: this.props.newRequestBody.bodyType,
             rawType: this.props.newRequestBody.rawType
           },
@@ -149,6 +155,11 @@ class ModalNewRequest extends Component {
         headersArr : [],
         count : 0,
       });
+      
+      this.props.setNewRequestCookies({
+        cookiesArr : [],
+        count : 0,
+      });
 
       this.props.setNewRequestBody({
         bodyContent : '',
@@ -179,15 +190,11 @@ class ModalNewRequest extends Component {
 
     return (
       <div
-        role="button"
         tabIndex={0}
         style={{ display: 'flex', flexDirection: 'column' }}
         onKeyPress={(event) => {
-          // if (event.key === 'Enter') {
-          //   this.addNewRequest();
-          // }
         }}
-      >
+        >
         <h1 className="modal_title">Create New Request</h1>
 
 
@@ -200,6 +207,8 @@ class ModalNewRequest extends Component {
         <BodyEntryForm 
           stylesObj={BodyEntryFormStyle} 
         />
+        
+        <CookieEntryForm/>
 
         <button className="modal_submit" onClick={this.addNewRequest} type="button">
           Add New Request

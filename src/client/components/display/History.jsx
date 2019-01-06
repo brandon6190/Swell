@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as actions from '../../actions/actions';
 import dbController from '../../controllers/dbController';
+import Trashcan from '../../../assets/img/Trashcan.png'
+
 const path = require('path');
 
 const mapStateToProps = store => ({
@@ -23,6 +25,9 @@ const mapDispatchToProps = dispatch => ({
   setNewRequestHeaders : (requestHeadersObj) => {
     dispatch(actions.setNewRequestHeaders(requestHeadersObj));
   },
+  setNewRequestCookies : (requestCookiesObj) => {
+    dispatch(actions.setNewRequestCookies(requestCookiesObj));
+  },
   setNewRequestBody : (requestBodyObj) => {
     dispatch(actions.setNewRequestBody(requestBodyObj));
   },
@@ -38,7 +43,7 @@ class History extends Component {
   }
 
   addHistoryToNewRequest () {
-    
+    console.log(this.props);
     const requestFieldObj = {
       method : this.props.content.request.method ? this.props.content.request.method : 'GET',
       protocol : this.props.content.protocol ? this.props.content.protocol : 'http://',
@@ -47,6 +52,10 @@ class History extends Component {
     const requestHeadersObj = {
       headersArr : this.props.content.request.headers ? this.props.content.request.headers : [],
       count : this.props.content.request.headers ? this.props.content.request.headers.length : 0,
+    }
+    const requestCookiesObj = {
+      cookiesArr : this.props.content.request.cookies ? this.props.content.request.cookies : [],
+      count : this.props.content.request.cookies ? this.props.content.request.cookies.length : 0,
     }
     const requestBodyObj = {
       bodyContent : this.props.content.request.body ? this.props.content.request.body : '',
@@ -57,6 +66,7 @@ class History extends Component {
 
     this.props.setNewRequestFields(requestFieldObj);
     this.props.setNewRequestHeaders(requestHeadersObj);
+    this.props.setNewRequestCookies(requestCookiesObj);
     this.props.setNewRequestBody(requestBodyObj);
   }
 
@@ -67,7 +77,6 @@ class History extends Component {
 
 
   render() {
-    let trashcan = path.join('file://'+'../../../' + __dirname + '/assets/icons/Trashcan.png');
     return(
       <div className={'history-container'} >
         <div className={'history-text-container'} onClick={this.addHistoryToNewRequest}> 
@@ -80,7 +89,7 @@ class History extends Component {
           <div className='history-delete-fade'>
           </div>
           <div className={'history-delete-button'} onClick={this.deleteHistory}>
-            <img className='history-delete-image' src={'https://i.imgur.com/GiMa26l.png'} id={this.props.content.id} ></img>
+            <img className='history-delete-image' src={Trashcan} id={this.props.content.id} ></img>
           </div>
         </div>
       </div>

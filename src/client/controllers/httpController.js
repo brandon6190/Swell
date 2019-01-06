@@ -266,11 +266,12 @@ const httpController = {
     const parsedFetchOptions = this.parseFetchOptionsFromReqRes(reqResObj);
     parsedFetchOptions.signal = openConnectionObj.abort.signal;
 
-    fetch(reqResObj.url, parsedFetchOptions).then((response) => {
-      console.log('RESPONSE ::', response);
-      // Parse response headers now to decide if SSE or not.
-      const heads = {};
-      for (const entry of response.headers.entries()) {
+    fetch(reqResObj.url, parsedFetchOptions)
+    .then(response => {
+      // console.log('RESPONSE ::', response)
+      //Parse response headers now to decide if SSE or not.
+      let heads = {};
+      for (let entry of response.headers.entries()) {
         heads[entry[0].toLowerCase()] = entry[1];
       }
       reqResObj.response.headers = heads;
@@ -308,11 +309,13 @@ const httpController = {
             http1Sesh.cookies.remove(url, cook.name, x => console.log(x));
           });
         }
-        isStream
-          ? this.handleSSE(response, reqResObj, heads)
-          : this.handleSingleEvent(response, reqResObj, heads);
-      });
-    });
+        isStream ? this.handleSSE(response, reqResObj, heads) : this.handleSingleEvent(response, reqResObj, heads);
+      })
+    })
+    .catch(err => {
+      reqResObj.connection = 'error';
+      store.default.dispatch(actions.reqResUpdate(reqResObj));
+    }) 
   },
 
   parseFetchOptionsFromReqRes(reqResObject) {
@@ -320,6 +323,7 @@ const httpController = {
       request: { method },
       request: { headers },
       request: { body },
+      request: { cookies },
     } = reqResObject;
 
     method = method.toUpperCase();
@@ -331,11 +335,16 @@ const httpController = {
       }
     });
 
+    cookies.forEach(cookie => {
+      let cookieString = `${cookie.key}=${cookie.value}`;
+      document.cookie = cookieString;
+    })
+
     const outputObj = {
       method,
       mode: 'cors', // no-cors, cors, *same-origin
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
+      credentials: 'include', // include, *same-origin, omit
       headers: formattedHeaders,
       redirect: 'follow', // manual, *follow, error
       referrer: 'no-referrer', // no-referrer, *client
