@@ -2,13 +2,13 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 // Import parts of electron to use
-const { app, BrowserWindow, TouchBar, session } = require('electron')
+const { app, BrowserWindow, TouchBar, session } = require('electron');
 
-const path = require('path')
-const url = require('url')
+const path = require('path');
+const url = require('url');
 
 // Import Auto-Updater
-const { autoUpdater } = require('electron-updater')
+const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
 const { TouchBarButton, TouchBarSpacer } = TouchBar;
@@ -109,7 +109,7 @@ function createWindow() {
     show: false,
     title: 'Swell',
     webPreferences: { webSecurity: false },
-    icon: `${__dirname}/src/assets/icons/64x64.png`
+    icon: `${__dirname}/src/assets/icons/icon.png`
   })
 
   if (dev) {
